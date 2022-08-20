@@ -29,7 +29,7 @@ def parse_vns(chapter):
     return chapter_dict
 
 
-def add_chapter(document: Document, chapter_index_tuple, file_json, languages=("en", "zh-Hans")):
+def add_chapter(document: Document, chapter_index_tuple, file_json, languages=("en", "zh-Hans"), *, is_split=False):
     for chapter in chapter_index_tuple:
         if chapter in file_json:
             # 普通剧情在vn文件内
@@ -39,9 +39,20 @@ def add_chapter(document: Document, chapter_index_tuple, file_json, languages=("
             story_json = parse_vns(chapter)
 
         document.add_heading(chapter, level=3)
-        for lang in languages:
-            document.add_heading(lang, level=4)
-            document.add_paragraph(story_json[lang])
+        if not is_split:
+            for lang in languages:
+                document.add_heading(lang, level=4)
+                document.add_paragraph(story_json[lang])
+        # else:
+        #     split_story = {}
+        #     for lang_ in languages:
+        #         split_story[lang_] = story_json[lang_].split("\n")
+        #     max_line = len(split_story[languages[0]])
+        #
+        #     for line_no in range(0, max_line - 1):
+        #         for lang in languages:
+        #             document.add_paragraph(split_story[lang][line_no])
+        #             print(split_story[lang][line_no])
 
 
 def main(languages=None):
@@ -75,10 +86,6 @@ def main(languages=None):
     chapter_index = ("102-" + str(i) for i in range(1, 8))
     add_chapter(document, chapter_index, main_story_json, languages)
 
-    document.add_heading("The End", level=2)
-    chapter_index = ("102-" + str(i) for i in range(1, 8))
-    add_chapter(document, chapter_index, main_story_json, languages)
-
     document.add_heading("The ending", level=2)
     chapter_index = ("103-" + str(i) for i in range(1, 3))
     add_chapter(document, chapter_index, main_story_json, languages)
@@ -105,7 +112,7 @@ def main(languages=None):
     chapter_index = ("9-" + str(i) for i in range(1, 7))
     add_chapter(document, chapter_index, side_story_json, languages)
 
-    document.add_heading("Lagrange's Story", level=2)
+    document.add_heading("Shirahime's Story", level=2)
     chapter_index = ("99-" + str(i) for i in range(1, 7))
     add_chapter(document, chapter_index, side_story_json, languages)
 
@@ -118,7 +125,7 @@ def main(languages=None):
     add_chapter(document, chapter_index, side_story_json, languages)
 
     document.add_heading("Mir's Story", level=2)
-    chapter_index = ("6-" + str(i) for i in range(1, 4))
+    chapter_index = ("8-" + str(i) for i in range(1, 4))
     add_chapter(document, chapter_index, side_story_json, languages)
 
     document.add_heading("Ayu's Story", level=2)
@@ -132,4 +139,5 @@ def main(languages=None):
     document.save('Arcaea-story.docx')
 
 
-main()
+# 可以选择的参数["en", "ja", "ko", "zh-Hans", "zh-Hant"]
+main(["en", "zh-Hans"])
